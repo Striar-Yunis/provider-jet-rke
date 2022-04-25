@@ -1,0 +1,3043 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.8.0
+  creationTimestamp: null
+  name: clusters.rke.rke.jet.crossplane.io
+spec:
+  group: rke.rke.jet.crossplane.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    - rkejet
+    kind: Cluster
+    listKind: ClusterList
+    plural: clusters
+    singular: cluster
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .metadata.annotations.crossplane\.io/external-name
+      name: EXTERNAL-NAME
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Cluster is the Schema for the Clusters API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterSpec defines the desired state of Cluster
+            properties:
+              deletionPolicy:
+                default: Delete
+                description: DeletionPolicy specifies what will happen to the underlying
+                  external when this managed resource is deleted - either "Delete"
+                  or "Orphan" the external resource.
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              forProvider:
+                properties:
+                  addonJobTimeout:
+                    description: RKE k8s cluster addon deployment timeout in seconds
+                      for status check
+                    type: number
+                  addons:
+                    description: RKE k8s cluster user addons YAML manifest to be deployed
+                    type: string
+                  addonsInclude:
+                    description: RKE k8s cluster user addons YAML manifest urls or
+                      paths to be deployed
+                    items:
+                      type: string
+                    type: array
+                  authentication:
+                    description: RKE k8s cluster authentication configuration
+                    items:
+                      properties:
+                        sans:
+                          description: List of additional hostnames and IPs to include
+                            in the api server PKI cert
+                          items:
+                            type: string
+                          type: array
+                        strategy:
+                          description: Authentication strategy that will be used in
+                            RKE k8s cluster
+                          type: string
+                        webhook:
+                          description: Webhook configuration options
+                          items:
+                            properties:
+                              cacheTimeout:
+                                description: Controls how long to cache authentication
+                                  decisions
+                                type: string
+                              configFile:
+                                description: Multiline string that represent a custom
+                                  webhook config file
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                  authorization:
+                    description: RKE k8s cluster authorization mode configuration
+                    items:
+                      properties:
+                        mode:
+                          type: string
+                        options:
+                          additionalProperties:
+                            type: string
+                          description: Authorization mode options
+                          type: object
+                      type: object
+                    type: array
+                  bastionHost:
+                    description: RKE k8s cluster bastion Host configuration
+                    items:
+                      properties:
+                        address:
+                          description: Address of Bastion Host
+                          type: string
+                        ignoreProxyEnvVars:
+                          description: Ignore proxy env vars at Bastion Host?
+                          type: boolean
+                        port:
+                          description: SSH Port of Bastion Host
+                          type: string
+                        sshAgentAuth:
+                          description: SSH Agent Auth enable
+                          type: boolean
+                        sshCertPath:
+                          description: SSH Certificate Key Path
+                          type: string
+                        sshCertSecretRef:
+                          description: SSH Certificate Key
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        sshKeyPath:
+                          description: SSH Private Key Path
+                          type: string
+                        sshKeySecretRef:
+                          description: SSH Private Key
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        user:
+                          description: SSH User to Bastion Host
+                          type: string
+                      required:
+                      - address
+                      - user
+                      type: object
+                    type: array
+                  certDir:
+                    description: Specify a certificate dir path
+                    type: string
+                  cloudProvider:
+                    description: RKE k8s cluster cloud provider configuration
+                    items:
+                      properties:
+                        awsCloudConfig:
+                          items:
+                            properties:
+                              global:
+                                items:
+                                  properties:
+                                    disableSecurityGroupIngress:
+                                      description: Disables the automatic ingress
+                                        creation
+                                      type: boolean
+                                    disableStrictZoneCheck:
+                                      description: Setting this to true will disable
+                                        the check and provide a warning that the check
+                                        was skipped
+                                      type: boolean
+                                    elbSecurityGroup:
+                                      description: Use these ELB security groups instead
+                                        create new
+                                      type: string
+                                    kubernetesClusterId:
+                                      description: The cluster id we'll use to identify
+                                        our cluster resources
+                                      type: string
+                                    kubernetesClusterTag:
+                                      description: Legacy cluster id we'll use to
+                                        identify our cluster resources
+                                      type: string
+                                    roleArn:
+                                      description: IAM role to assume when interaction
+                                        with AWS APIs
+                                      type: string
+                                    routeTableId:
+                                      description: Enables using a specific RouteTable
+                                      type: string
+                                    subnetId:
+                                      description: Enables using a specific subnet
+                                        to use for ELB's
+                                      type: string
+                                    vpc:
+                                      description: The AWS VPC flag enables the possibility
+                                        to run the master components on a different
+                                        aws account, on a different cloud provider
+                                        or on-premises. If the flag is set also the
+                                        KubernetesClusterTag must be provided
+                                      type: string
+                                    zone:
+                                      description: The AWS zone
+                                      type: string
+                                  type: object
+                                type: array
+                              serviceOverride:
+                                items:
+                                  properties:
+                                    key:
+                                      type: string
+                                    region:
+                                      type: string
+                                    service:
+                                      type: string
+                                    signingMethod:
+                                      type: string
+                                    signingName:
+                                      type: string
+                                    signingRegion:
+                                      type: string
+                                    url:
+                                      type: string
+                                  required:
+                                  - service
+                                  type: object
+                                type: array
+                            type: object
+                          type: array
+                        awsCloudProvider:
+                          description: AWS Cloud Provider config
+                          items:
+                            properties:
+                              global:
+                                items:
+                                  properties:
+                                    disableSecurityGroupIngress:
+                                      description: Disables the automatic ingress
+                                        creation
+                                      type: boolean
+                                    disableStrictZoneCheck:
+                                      description: Setting this to true will disable
+                                        the check and provide a warning that the check
+                                        was skipped
+                                      type: boolean
+                                    elbSecurityGroup:
+                                      description: Use these ELB security groups instead
+                                        create new
+                                      type: string
+                                    kubernetesClusterId:
+                                      description: The cluster id we'll use to identify
+                                        our cluster resources
+                                      type: string
+                                    kubernetesClusterTag:
+                                      description: Legacy cluster id we'll use to
+                                        identify our cluster resources
+                                      type: string
+                                    roleArn:
+                                      description: IAM role to assume when interaction
+                                        with AWS APIs
+                                      type: string
+                                    routeTableId:
+                                      description: Enables using a specific RouteTable
+                                      type: string
+                                    subnetId:
+                                      description: Enables using a specific subnet
+                                        to use for ELB's
+                                      type: string
+                                    vpc:
+                                      description: The AWS VPC flag enables the possibility
+                                        to run the master components on a different
+                                        aws account, on a different cloud provider
+                                        or on-premises. If the flag is set also the
+                                        KubernetesClusterTag must be provided
+                                      type: string
+                                    zone:
+                                      description: The AWS zone
+                                      type: string
+                                  type: object
+                                type: array
+                              serviceOverride:
+                                items:
+                                  properties:
+                                    key:
+                                      type: string
+                                    region:
+                                      type: string
+                                    service:
+                                      type: string
+                                    signingMethod:
+                                      type: string
+                                    signingName:
+                                      type: string
+                                    signingRegion:
+                                      type: string
+                                    url:
+                                      type: string
+                                  required:
+                                  - service
+                                  type: object
+                                type: array
+                            type: object
+                          type: array
+                        azureCloudConfig:
+                          items:
+                            properties:
+                              aadClientCertPasswordSecretRef:
+                                description: The password of the client certificate
+                                  for an AAD application with RBAC access to talk
+                                  to Azure RM APIs
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              aadClientCertPath:
+                                description: The path of a client certificate for
+                                  an AAD application with RBAC access to talk to Azure
+                                  RM APIs
+                                type: string
+                              aadClientIdSecretRef:
+                                description: The ClientID for an AAD application with
+                                  RBAC access to talk to Azure RM APIs
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              aadClientSecretSecretRef:
+                                description: The ClientSecret for an AAD application
+                                  with RBAC access to talk to Azure RM APIs
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              cloud:
+                                description: The cloud environment identifier. Takes
+                                  values from https://github.com/Azure/go-autorest/blob/ec5f4903f77ed9927ac95b19ab8e44ada64c1356/autorest/azure/environments.go#L13
+                                type: string
+                              cloudProviderBackoff:
+                                description: Enable exponential backoff to manage
+                                  resource request retries
+                                type: boolean
+                              cloudProviderBackoffDuration:
+                                description: Backoff duration
+                                type: number
+                              cloudProviderBackoffExponent:
+                                description: Backoff exponent
+                                type: number
+                              cloudProviderBackoffJitter:
+                                description: Backoff jitter
+                                type: number
+                              cloudProviderBackoffRetries:
+                                description: Backoff retry limit
+                                type: number
+                              cloudProviderRateLimit:
+                                description: Enable rate limiting
+                                type: boolean
+                              cloudProviderRateLimitBucket:
+                                type: number
+                              cloudProviderRateLimitQps:
+                                description: Rate limit QPS
+                                type: number
+                              loadBalancerSku:
+                                description: Load balancer type (basic | standard).
+                                  Must be standard for auto-scaling
+                                type: string
+                              location:
+                                description: The location of the resource group that
+                                  the cluster is deployed in
+                                type: string
+                              maximumLoadBalancerRuleCount:
+                                description: Maximum allowed LoadBalancer Rule Count
+                                  is the limit enforced by Azure Load balancer
+                                type: number
+                              primaryAvailabilitySetName:
+                                description: The name of the availability set that
+                                  should be used as the load balancer backendIf this
+                                  is set, the Azure cloudprovider will only add nodes
+                                  from that availability set to the loadbalancer backend
+                                  pool. If this is not set, and multiple agent pools
+                                  (availability sets) are used, thenthe cloudprovider
+                                  will try to add all nodes to a single backend pool
+                                  which is forbidden.In other words, if you use multiple
+                                  agent pools (availability sets), you MUST set this
+                                  field.
+                                type: string
+                              primaryScaleSetName:
+                                description: The name of the scale set that should
+                                  be used as the load balancer backend.If this is
+                                  set, the Azure cloudprovider will only add nodes
+                                  from that scale set to the loadbalancer backend
+                                  pool. If this is not set, and multiple agent pools
+                                  (scale sets) are used, thenthe cloudprovider will
+                                  try to add all nodes to a single backend pool which
+                                  is forbidden.In other words, if you use multiple
+                                  agent pools (scale sets), you MUST set this field.
+                                type: string
+                              resourceGroup:
+                                description: The name of the resource group that the
+                                  cluster is deployed in
+                                type: string
+                              routeTableName:
+                                description: (Optional in 1.6) The name of the route
+                                  table attached to the subnet that the cluster is
+                                  deployed in
+                                type: string
+                              securityGroupName:
+                                description: The name of the security group attached
+                                  to the cluster's subnet
+                                type: string
+                              subnetName:
+                                description: The name of the Subnet that the cluster
+                                  is deployed in
+                                type: string
+                              subscriptionIdSecretRef:
+                                description: The ID of the Azure Subscription that
+                                  the cluster is deployed in
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              tenantIdSecretRef:
+                                description: The AAD Tenant ID for the Subscription
+                                  that the cluster is deployed in
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              useInstanceMetadata:
+                                description: Use instance metadata service where possible
+                                type: boolean
+                              useManagedIdentityExtension:
+                                description: Use managed service identity for the
+                                  virtual machine to access Azure ARM APIs
+                                type: boolean
+                              vmType:
+                                description: The type of azure nodes. If not set,
+                                  it will be default to standard.
+                                type: string
+                              vnetName:
+                                description: The name of the VNet that the cluster
+                                  is deployed in
+                                type: string
+                              vnetResourceGroup:
+                                description: The name of the resource group that the
+                                  Vnet is deployed in
+                                type: string
+                            required:
+                            - aadClientIdSecretRef
+                            - aadClientSecretSecretRef
+                            - subscriptionIdSecretRef
+                            - tenantIdSecretRef
+                            type: object
+                          type: array
+                        azureCloudProvider:
+                          description: Azure Cloud Provider config
+                          items:
+                            properties:
+                              aadClientCertPasswordSecretRef:
+                                description: The password of the client certificate
+                                  for an AAD application with RBAC access to talk
+                                  to Azure RM APIs
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              aadClientCertPath:
+                                description: The path of a client certificate for
+                                  an AAD application with RBAC access to talk to Azure
+                                  RM APIs
+                                type: string
+                              aadClientIdSecretRef:
+                                description: The ClientID for an AAD application with
+                                  RBAC access to talk to Azure RM APIs
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              aadClientSecretSecretRef:
+                                description: The ClientSecret for an AAD application
+                                  with RBAC access to talk to Azure RM APIs
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              cloud:
+                                description: The cloud environment identifier. Takes
+                                  values from https://github.com/Azure/go-autorest/blob/ec5f4903f77ed9927ac95b19ab8e44ada64c1356/autorest/azure/environments.go#L13
+                                type: string
+                              cloudProviderBackoff:
+                                description: Enable exponential backoff to manage
+                                  resource request retries
+                                type: boolean
+                              cloudProviderBackoffDuration:
+                                description: Backoff duration
+                                type: number
+                              cloudProviderBackoffExponent:
+                                description: Backoff exponent
+                                type: number
+                              cloudProviderBackoffJitter:
+                                description: Backoff jitter
+                                type: number
+                              cloudProviderBackoffRetries:
+                                description: Backoff retry limit
+                                type: number
+                              cloudProviderRateLimit:
+                                description: Enable rate limiting
+                                type: boolean
+                              cloudProviderRateLimitBucket:
+                                type: number
+                              cloudProviderRateLimitQps:
+                                description: Rate limit QPS
+                                type: number
+                              loadBalancerSku:
+                                description: Load balancer type (basic | standard).
+                                  Must be standard for auto-scaling
+                                type: string
+                              location:
+                                description: The location of the resource group that
+                                  the cluster is deployed in
+                                type: string
+                              maximumLoadBalancerRuleCount:
+                                description: Maximum allowed LoadBalancer Rule Count
+                                  is the limit enforced by Azure Load balancer
+                                type: number
+                              primaryAvailabilitySetName:
+                                description: The name of the availability set that
+                                  should be used as the load balancer backendIf this
+                                  is set, the Azure cloudprovider will only add nodes
+                                  from that availability set to the loadbalancer backend
+                                  pool. If this is not set, and multiple agent pools
+                                  (availability sets) are used, thenthe cloudprovider
+                                  will try to add all nodes to a single backend pool
+                                  which is forbidden.In other words, if you use multiple
+                                  agent pools (availability sets), you MUST set this
+                                  field.
+                                type: string
+                              primaryScaleSetName:
+                                description: The name of the scale set that should
+                                  be used as the load balancer backend.If this is
+                                  set, the Azure cloudprovider will only add nodes
+                                  from that scale set to the loadbalancer backend
+                                  pool. If this is not set, and multiple agent pools
+                                  (scale sets) are used, thenthe cloudprovider will
+                                  try to add all nodes to a single backend pool which
+                                  is forbidden.In other words, if you use multiple
+                                  agent pools (scale sets), you MUST set this field.
+                                type: string
+                              resourceGroup:
+                                description: The name of the resource group that the
+                                  cluster is deployed in
+                                type: string
+                              routeTableName:
+                                description: (Optional in 1.6) The name of the route
+                                  table attached to the subnet that the cluster is
+                                  deployed in
+                                type: string
+                              securityGroupName:
+                                description: The name of the security group attached
+                                  to the cluster's subnet
+                                type: string
+                              subnetName:
+                                description: The name of the Subnet that the cluster
+                                  is deployed in
+                                type: string
+                              subscriptionIdSecretRef:
+                                description: The ID of the Azure Subscription that
+                                  the cluster is deployed in
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              tenantIdSecretRef:
+                                description: The AAD Tenant ID for the Subscription
+                                  that the cluster is deployed in
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              useInstanceMetadata:
+                                description: Use instance metadata service where possible
+                                type: boolean
+                              useManagedIdentityExtension:
+                                description: Use managed service identity for the
+                                  virtual machine to access Azure ARM APIs
+                                type: boolean
+                              vmType:
+                                description: The type of azure nodes. If not set,
+                                  it will be default to standard.
+                                type: string
+                              vnetName:
+                                description: The name of the VNet that the cluster
+                                  is deployed in
+                                type: string
+                              vnetResourceGroup:
+                                description: The name of the resource group that the
+                                  Vnet is deployed in
+                                type: string
+                            required:
+                            - aadClientIdSecretRef
+                            - aadClientSecretSecretRef
+                            - subscriptionIdSecretRef
+                            - tenantIdSecretRef
+                            type: object
+                          type: array
+                        customCloudConfig:
+                          type: string
+                        customCloudProvider:
+                          description: Custom Cloud Provider config
+                          type: string
+                        name:
+                          type: string
+                        openstackCloudConfig:
+                          items:
+                            properties:
+                              blockStorage:
+                                items:
+                                  properties:
+                                    bsVersion:
+                                      type: string
+                                    ignoreVolumeAz:
+                                      type: boolean
+                                    trustDevicePath:
+                                      type: boolean
+                                  type: object
+                                type: array
+                              global:
+                                items:
+                                  properties:
+                                    authUrl:
+                                      type: string
+                                    caFile:
+                                      type: string
+                                    domainIdSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    domainName:
+                                      type: string
+                                    passwordSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    region:
+                                      type: string
+                                    tenantIdSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    tenantName:
+                                      type: string
+                                    trustIdSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    userIdSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    username:
+                                      type: string
+                                  required:
+                                  - authUrl
+                                  - passwordSecretRef
+                                  type: object
+                                type: array
+                              loadBalancer:
+                                items:
+                                  properties:
+                                    createMonitor:
+                                      type: boolean
+                                    floatingNetworkId:
+                                      type: string
+                                    lbMethod:
+                                      type: string
+                                    lbProvider:
+                                      type: string
+                                    lbVersion:
+                                      type: string
+                                    manageSecurityGroups:
+                                      type: boolean
+                                    monitorDelay:
+                                      type: string
+                                    monitorMaxRetries:
+                                      type: number
+                                    monitorTimeout:
+                                      type: string
+                                    subnetId:
+                                      type: string
+                                    useOctavia:
+                                      type: boolean
+                                  type: object
+                                type: array
+                              metadata:
+                                items:
+                                  properties:
+                                    requestTimeout:
+                                      type: number
+                                    searchOrder:
+                                      type: string
+                                  type: object
+                                type: array
+                              route:
+                                items:
+                                  properties:
+                                    routerId:
+                                      type: string
+                                  type: object
+                                type: array
+                            required:
+                            - global
+                            type: object
+                          type: array
+                        openstackCloudProvider:
+                          description: Openstack Cloud Provider config
+                          items:
+                            properties:
+                              blockStorage:
+                                items:
+                                  properties:
+                                    bsVersion:
+                                      type: string
+                                    ignoreVolumeAz:
+                                      type: boolean
+                                    trustDevicePath:
+                                      type: boolean
+                                  type: object
+                                type: array
+                              global:
+                                items:
+                                  properties:
+                                    authUrl:
+                                      type: string
+                                    caFile:
+                                      type: string
+                                    domainIdSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    domainName:
+                                      type: string
+                                    passwordSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    region:
+                                      type: string
+                                    tenantIdSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    tenantName:
+                                      type: string
+                                    trustIdSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    userIdSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    username:
+                                      type: string
+                                  required:
+                                  - authUrl
+                                  - passwordSecretRef
+                                  type: object
+                                type: array
+                              loadBalancer:
+                                items:
+                                  properties:
+                                    createMonitor:
+                                      type: boolean
+                                    floatingNetworkId:
+                                      type: string
+                                    lbMethod:
+                                      type: string
+                                    lbProvider:
+                                      type: string
+                                    lbVersion:
+                                      type: string
+                                    manageSecurityGroups:
+                                      type: boolean
+                                    monitorDelay:
+                                      type: string
+                                    monitorMaxRetries:
+                                      type: number
+                                    monitorTimeout:
+                                      type: string
+                                    subnetId:
+                                      type: string
+                                    useOctavia:
+                                      type: boolean
+                                  type: object
+                                type: array
+                              metadata:
+                                items:
+                                  properties:
+                                    requestTimeout:
+                                      type: number
+                                    searchOrder:
+                                      type: string
+                                  type: object
+                                type: array
+                              route:
+                                items:
+                                  properties:
+                                    routerId:
+                                      type: string
+                                  type: object
+                                type: array
+                            required:
+                            - global
+                            type: object
+                          type: array
+                        vsphereCloudConfig:
+                          items:
+                            properties:
+                              disk:
+                                items:
+                                  properties:
+                                    scsiControllerType:
+                                      type: string
+                                  type: object
+                                type: array
+                              global:
+                                items:
+                                  properties:
+                                    datacenter:
+                                      type: string
+                                    datacenters:
+                                      type: string
+                                    datastore:
+                                      type: string
+                                    insecureFlag:
+                                      type: boolean
+                                    passwordSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    port:
+                                      type: string
+                                    soapRoundtripCount:
+                                      type: number
+                                    userSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    vmName:
+                                      type: string
+                                    vmUuid:
+                                      type: string
+                                    workingDir:
+                                      type: string
+                                  type: object
+                                type: array
+                              network:
+                                items:
+                                  properties:
+                                    publicNetwork:
+                                      type: string
+                                  type: object
+                                type: array
+                              virtualCenter:
+                                items:
+                                  properties:
+                                    datacenters:
+                                      type: string
+                                    name:
+                                      type: string
+                                    passwordSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    port:
+                                      type: string
+                                    soapRoundtripCount:
+                                      type: number
+                                    userSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                  required:
+                                  - datacenters
+                                  - name
+                                  - passwordSecretRef
+                                  - userSecretRef
+                                  type: object
+                                type: array
+                              workspace:
+                                items:
+                                  properties:
+                                    datacenter:
+                                      type: string
+                                    defaultDatastore:
+                                      type: string
+                                    folder:
+                                      type: string
+                                    resourcepoolPath:
+                                      type: string
+                                    server:
+                                      type: string
+                                  required:
+                                  - datacenter
+                                  - server
+                                  type: object
+                                type: array
+                            required:
+                            - virtualCenter
+                            - workspace
+                            type: object
+                          type: array
+                        vsphereCloudProvider:
+                          description: Vsphere Cloud Provider config
+                          items:
+                            properties:
+                              disk:
+                                items:
+                                  properties:
+                                    scsiControllerType:
+                                      type: string
+                                  type: object
+                                type: array
+                              global:
+                                items:
+                                  properties:
+                                    datacenter:
+                                      type: string
+                                    datacenters:
+                                      type: string
+                                    datastore:
+                                      type: string
+                                    insecureFlag:
+                                      type: boolean
+                                    passwordSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    port:
+                                      type: string
+                                    soapRoundtripCount:
+                                      type: number
+                                    userSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    vmName:
+                                      type: string
+                                    vmUuid:
+                                      type: string
+                                    workingDir:
+                                      type: string
+                                  type: object
+                                type: array
+                              network:
+                                items:
+                                  properties:
+                                    publicNetwork:
+                                      type: string
+                                  type: object
+                                type: array
+                              virtualCenter:
+                                items:
+                                  properties:
+                                    datacenters:
+                                      type: string
+                                    name:
+                                      type: string
+                                    passwordSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    port:
+                                      type: string
+                                    soapRoundtripCount:
+                                      type: number
+                                    userSecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                  required:
+                                  - datacenters
+                                  - name
+                                  - passwordSecretRef
+                                  - userSecretRef
+                                  type: object
+                                type: array
+                              workspace:
+                                items:
+                                  properties:
+                                    datacenter:
+                                      type: string
+                                    defaultDatastore:
+                                      type: string
+                                    folder:
+                                      type: string
+                                    resourcepoolPath:
+                                      type: string
+                                    server:
+                                      type: string
+                                  required:
+                                  - datacenter
+                                  - server
+                                  type: object
+                                type: array
+                            required:
+                            - virtualCenter
+                            - workspace
+                            type: object
+                          type: array
+                      required:
+                      - name
+                      type: object
+                    type: array
+                  clusterYamlSecretRef:
+                    description: RKE k8s cluster config yaml
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  customCerts:
+                    description: Use custom certificates from a cert dir
+                    type: boolean
+                  delayOnCreation:
+                    description: RKE k8s cluster delay on creation
+                    type: number
+                  dind:
+                    description: RKE k8s cluster dind (experimental)
+                    type: boolean
+                  dindDnsServer:
+                    description: RKE k8s cluster dind storage driver (experimental)
+                    type: string
+                  dindStorageDriver:
+                    description: RKE k8s cluster dind storage driver (experimental)
+                    type: string
+                  disablePortCheck:
+                    description: Enable/Disable RKE k8s cluster port checking
+                    type: boolean
+                  dns:
+                    description: RKE k8s cluster DNS Config
+                    items:
+                      properties:
+                        nodeSelector:
+                          additionalProperties:
+                            type: string
+                          description: NodeSelector key pair
+                          type: object
+                        nodelocal:
+                          description: Nodelocal dns
+                          items:
+                            properties:
+                              ipAddress:
+                                type: string
+                              nodeSelector:
+                                additionalProperties:
+                                  type: string
+                                description: Node selector key pair
+                                type: object
+                            type: object
+                          type: array
+                        provider:
+                          description: DNS provider
+                          type: string
+                        reverseCidrs:
+                          description: ReverseCIDRs
+                          items:
+                            type: string
+                          type: array
+                        upstreamNameservers:
+                          description: Upstream nameservers
+                          items:
+                            type: string
+                          type: array
+                      type: object
+                    type: array
+                  ignoreDockerVersion:
+                    description: Enable/Disable RKE k8s cluster strict docker version
+                      checking
+                    type: boolean
+                  ingress:
+                    description: RKE k8s cluster ingress controller configuration
+                    items:
+                      properties:
+                        defaultBackend:
+                          description: Ingress Default Backend
+                          type: boolean
+                        dnsPolicy:
+                          description: Ingress controller dns policy
+                          type: string
+                        extraArgs:
+                          additionalProperties:
+                            type: string
+                          description: Extra arguments for the ingress controller
+                          type: object
+                        httpPort:
+                          description: Ingress controller http port
+                          type: number
+                        httpsPort:
+                          description: Ingress controller https port
+                          type: number
+                        networkMode:
+                          description: Ingress controller network mode
+                          type: string
+                        nodeSelector:
+                          additionalProperties:
+                            type: string
+                          description: Node selector key pair
+                          type: object
+                        options:
+                          additionalProperties:
+                            type: string
+                          description: Ingress controller options
+                          type: object
+                        provider:
+                          description: Ingress controller provider
+                          type: string
+                      type: object
+                    type: array
+                  kubernetesVersion:
+                    description: K8s version to deploy (if kubernetes image is specified,
+                      image version takes precedence)
+                    type: string
+                  monitoring:
+                    description: RKE k8s cluster monitoring Config
+                    items:
+                      properties:
+                        nodeSelector:
+                          additionalProperties:
+                            type: string
+                          description: Node selector key pair
+                          type: object
+                        options:
+                          additionalProperties:
+                            type: string
+                          description: Monitoring options
+                          type: object
+                        provider:
+                          description: Monitoring provider
+                          type: string
+                      type: object
+                    type: array
+                  network:
+                    description: RKE k8s cluster network configuration
+                    items:
+                      properties:
+                        aciNetworkProvider:
+                          description: Aci network provider config
+                          items:
+                            properties:
+                              aep:
+                                type: string
+                              apicHosts:
+                                items:
+                                  type: string
+                                type: array
+                              apicUserCrtSecretRef:
+                                description: A SecretKeySelector is a reference to
+                                  a secret key in an arbitrary namespace.
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              apicUserKeySecretRef:
+                                description: A SecretKeySelector is a reference to
+                                  a secret key in an arbitrary namespace.
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              apicUserName:
+                                type: string
+                              encapType:
+                                type: string
+                              externDynamic:
+                                type: string
+                              externStatic:
+                                type: string
+                              infraVlan:
+                                type: string
+                              kubeApiVlan:
+                                type: string
+                              l3out:
+                                type: string
+                              l3outExternalNetworks:
+                                items:
+                                  type: string
+                                type: array
+                              mcastRangeEnd:
+                                type: string
+                              mcastRangeStart:
+                                type: string
+                              nodeSubnet:
+                                type: string
+                              nodeSvcSubnet:
+                                type: string
+                              serviceVlan:
+                                type: string
+                              snatPortRangeEnd:
+                                type: string
+                              snatPortRangeStart:
+                                type: string
+                              snatPortsPerNode:
+                                type: string
+                              systemId:
+                                type: string
+                              tokenSecretRef:
+                                description: A SecretKeySelector is a reference to
+                                  a secret key in an arbitrary namespace.
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              vrfName:
+                                type: string
+                              vrfTenant:
+                                type: string
+                            required:
+                            - aep
+                            - apicHosts
+                            - apicUserCrtSecretRef
+                            - apicUserKeySecretRef
+                            - apicUserName
+                            - encapType
+                            - externDynamic
+                            - externStatic
+                            - infraVlan
+                            - kubeApiVlan
+                            - l3out
+                            - l3outExternalNetworks
+                            - mcastRangeEnd
+                            - mcastRangeStart
+                            - nodeSubnet
+                            - nodeSvcSubnet
+                            - serviceVlan
+                            - systemId
+                            - tokenSecretRef
+                            - vrfName
+                            - vrfTenant
+                            type: object
+                          type: array
+                        calicoNetworkProvider:
+                          description: Calico network provider config
+                          items:
+                            properties:
+                              cloudProvider:
+                                type: string
+                            type: object
+                          type: array
+                        canalNetworkProvider:
+                          description: Canal network provider config
+                          items:
+                            properties:
+                              iface:
+                                type: string
+                            type: object
+                          type: array
+                        flannelNetworkProvider:
+                          description: Flannel network provider config
+                          items:
+                            properties:
+                              iface:
+                                type: string
+                            type: object
+                          type: array
+                        mtu:
+                          description: Network provider MTU
+                          type: number
+                        options:
+                          additionalProperties:
+                            type: string
+                          description: Network provider options
+                          type: object
+                        plugin:
+                          description: Network provider plugin
+                          type: string
+                        weaveNetworkProvider:
+                          description: Weave network provider config
+                          items:
+                            properties:
+                              password:
+                                type: string
+                            required:
+                            - password
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                  nodes:
+                    description: RKE k8s cluster nodes
+                    items:
+                      properties:
+                        address:
+                          description: IP or FQDN that is fully resolvable and used
+                            for SSH communication
+                          type: string
+                        dockerSocket:
+                          description: Docker socket on the node that will be used
+                            in tunneling
+                          type: string
+                        hostnameOverride:
+                          description: Hostname override
+                          type: string
+                        internalAddress:
+                          description: Internal address that will be used for components
+                            communication
+                          type: string
+                        labels:
+                          additionalProperties:
+                            type: string
+                          description: Node Labels
+                          type: object
+                        nodeName:
+                          description: Name of the host provisioned via docker machine
+                          type: string
+                        port:
+                          description: Port used for SSH communication
+                          type: string
+                        role:
+                          description: Node roles in k8s cluster [controlplane/worker/etcd])
+                          items:
+                            type: string
+                          type: array
+                        roles:
+                          description: Node role in kubernetes cluster [controlplane/worker/etcd],
+                            specified by a comma-separated string
+                          type: string
+                        sshAgentAuth:
+                          description: SSH Agent Auth enable
+                          type: boolean
+                        sshCertPath:
+                          description: SSH Certificate path
+                          type: string
+                        sshCertSecretRef:
+                          description: SSH Certificate
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        sshKeyPath:
+                          description: SSH Private Key path
+                          type: string
+                        sshKeySecretRef:
+                          description: SSH Private Key
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        taints:
+                          description: Node taints
+                          items:
+                            properties:
+                              effect:
+                                type: string
+                              key:
+                                type: string
+                              value:
+                                type: string
+                            required:
+                            - key
+                            - value
+                            type: object
+                          type: array
+                        userSecretRef:
+                          description: SSH user that will be used by RKE
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                      required:
+                      - address
+                      - role
+                      - userSecretRef
+                      type: object
+                    type: array
+                  nodesConf:
+                    items:
+                      type: string
+                    type: array
+                  prefixPath:
+                    description: RKE k8s directory path
+                    type: string
+                  privateRegistries:
+                    description: RKE k8s cluster private docker registries
+                    items:
+                      properties:
+                        isDefault:
+                          description: Set as default registry
+                          type: boolean
+                        passwordSecretRef:
+                          description: Registry password
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        url:
+                          description: Registry URL
+                          type: string
+                        userSecretRef:
+                          description: Registry user
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                      required:
+                      - url
+                      type: object
+                    type: array
+                  restore:
+                    description: RKE k8s cluster restore configuration
+                    items:
+                      properties:
+                        restore:
+                          description: Restore RKE cluster
+                          type: boolean
+                        snapshotName:
+                          description: Snapshot name
+                          type: string
+                      type: object
+                    type: array
+                  rotateCertificates:
+                    description: RKE k8s cluster rotate certificates configuration
+                    items:
+                      properties:
+                        caCertificates:
+                          description: Rotate CA Certificates
+                          type: boolean
+                        services:
+                          description: Services to rotate their certs. valid values
+                            are etcd|kubelet|kube-apiserver|kube-proxy|kube-scheduler|kube-controller-manager
+                          items:
+                            type: string
+                          type: array
+                      type: object
+                    type: array
+                  services:
+                    description: RKE k8s cluster services
+                    items:
+                      properties:
+                        etcd:
+                          items:
+                            properties:
+                              backupConfig:
+                                items:
+                                  properties:
+                                    enabled:
+                                      type: boolean
+                                    intervalHours:
+                                      type: number
+                                    retention:
+                                      type: number
+                                    s3BackupConfig:
+                                      items:
+                                        properties:
+                                          accessKeySecretRef:
+                                            description: A SecretKeySelector is a
+                                              reference to a secret key in an arbitrary
+                                              namespace.
+                                            properties:
+                                              key:
+                                                description: The key to select.
+                                                type: string
+                                              name:
+                                                description: Name of the secret.
+                                                type: string
+                                              namespace:
+                                                description: Namespace of the secret.
+                                                type: string
+                                            required:
+                                            - key
+                                            - name
+                                            - namespace
+                                            type: object
+                                          bucketName:
+                                            type: string
+                                          customCa:
+                                            type: string
+                                          endpoint:
+                                            type: string
+                                          folder:
+                                            type: string
+                                          region:
+                                            type: string
+                                          secretKeySecretRef:
+                                            description: A SecretKeySelector is a
+                                              reference to a secret key in an arbitrary
+                                              namespace.
+                                            properties:
+                                              key:
+                                                description: The key to select.
+                                                type: string
+                                              name:
+                                                description: Name of the secret.
+                                                type: string
+                                              namespace:
+                                                description: Namespace of the secret.
+                                                type: string
+                                            required:
+                                            - key
+                                            - name
+                                            - namespace
+                                            type: object
+                                        type: object
+                                      type: array
+                                    safeTimestamp:
+                                      type: boolean
+                                    timeout:
+                                      type: number
+                                  type: object
+                                type: array
+                              caCertSecretRef:
+                                description: A SecretKeySelector is a reference to
+                                  a secret key in an arbitrary namespace.
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              certSecretRef:
+                                description: A SecretKeySelector is a reference to
+                                  a secret key in an arbitrary namespace.
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              creation:
+                                type: string
+                              externalUrls:
+                                items:
+                                  type: string
+                                type: array
+                              extraArgs:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                              extraBinds:
+                                items:
+                                  type: string
+                                type: array
+                              extraEnv:
+                                items:
+                                  type: string
+                                type: array
+                              gid:
+                                type: number
+                              image:
+                                type: string
+                              keySecretRef:
+                                description: A SecretKeySelector is a reference to
+                                  a secret key in an arbitrary namespace.
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    description: Name of the secret.
+                                    type: string
+                                  namespace:
+                                    description: Namespace of the secret.
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                - namespace
+                                type: object
+                              path:
+                                type: string
+                              retention:
+                                type: string
+                              snapshot:
+                                type: boolean
+                              uid:
+                                type: number
+                            type: object
+                          type: array
+                        kubeApi:
+                          items:
+                            properties:
+                              alwaysPullImages:
+                                description: Enable/Disable AlwaysPullImages admissions
+                                  plugin
+                                type: boolean
+                              auditLog:
+                                items:
+                                  properties:
+                                    configuration:
+                                      items:
+                                        properties:
+                                          format:
+                                            type: string
+                                          maxAge:
+                                            type: number
+                                          maxBackup:
+                                            type: number
+                                          maxSize:
+                                            type: number
+                                          path:
+                                            type: string
+                                          policy:
+                                            type: string
+                                        type: object
+                                      type: array
+                                    enabled:
+                                      type: boolean
+                                  type: object
+                                type: array
+                              eventRateLimit:
+                                items:
+                                  properties:
+                                    configuration:
+                                      type: string
+                                    enabled:
+                                      type: boolean
+                                  type: object
+                                type: array
+                              extraArgs:
+                                additionalProperties:
+                                  type: string
+                                description: Extra arguments that are added to the
+                                  kube-api services
+                                type: object
+                              extraBinds:
+                                description: Extra binds added to the controlplane
+                                  nodes
+                                items:
+                                  type: string
+                                type: array
+                              extraEnv:
+                                description: Extra env added to the controlplane nodes
+                                items:
+                                  type: string
+                                type: array
+                              image:
+                                type: string
+                              podSecurityPolicy:
+                                description: Enabled/Disable PodSecurityPolicy
+                                type: boolean
+                              secretsEncryptionConfig:
+                                items:
+                                  properties:
+                                    customConfig:
+                                      type: string
+                                    enabled:
+                                      type: boolean
+                                  type: object
+                                type: array
+                              serviceClusterIpRange:
+                                description: Virtual IP range that will be used by
+                                  Kubernetes services
+                                type: string
+                              serviceNodePortRange:
+                                description: Port range for services defined with
+                                  NodePort type
+                                type: string
+                            type: object
+                          type: array
+                        kubeController:
+                          items:
+                            properties:
+                              clusterCidr:
+                                description: CIDR Range for Pods in cluster
+                                type: string
+                              extraArgs:
+                                additionalProperties:
+                                  type: string
+                                description: Extra arguments that are added to the
+                                  kube-controller service
+                                type: object
+                              extraBinds:
+                                description: Extra binds added to the controlplane
+                                  nodes
+                                items:
+                                  type: string
+                                type: array
+                              extraEnv:
+                                description: Extra env added to the controlplane nodes
+                                items:
+                                  type: string
+                                type: array
+                              image:
+                                description: Docker image of the kube-controller service
+                                type: string
+                              serviceClusterIpRange:
+                                description: Virtual IP range that will be used by
+                                  Kubernetes services
+                                type: string
+                            type: object
+                          type: array
+                        kubelet:
+                          items:
+                            properties:
+                              clusterDnsServer:
+                                description: Cluster DNS service ip
+                                type: string
+                              clusterDomain:
+                                description: Domain of the cluster
+                                type: string
+                              extraArgs:
+                                additionalProperties:
+                                  type: string
+                                description: Extra arguments that are added to the
+                                  kubelet services
+                                type: object
+                              extraBinds:
+                                description: Extra binds added to the worker nodes
+                                items:
+                                  type: string
+                                type: array
+                              extraEnv:
+                                description: Extra env added to the nodes
+                                items:
+                                  type: string
+                                type: array
+                              failSwapOn:
+                                description: Fail if swap is enabled
+                                type: boolean
+                              generateServingCertificate:
+                                type: boolean
+                              image:
+                                description: Docker image of the kubelet service
+                                type: string
+                              infraContainerImage:
+                                description: The image whose network/ipc namespaces
+                                  containers in each pod will use
+                                type: string
+                            type: object
+                          type: array
+                        kubeproxy:
+                          items:
+                            properties:
+                              extraArgs:
+                                additionalProperties:
+                                  type: string
+                                description: Extra arguments that are added to the
+                                  kubeproxy services
+                                type: object
+                              extraBinds:
+                                description: Extra binds added to the worker nodes
+                                items:
+                                  type: string
+                                type: array
+                              extraEnv:
+                                description: Extra env added to the worker nodes
+                                items:
+                                  type: string
+                                type: array
+                              image:
+                                description: Docker image of the kubeproxy service
+                                type: string
+                            type: object
+                          type: array
+                        scheduler:
+                          items:
+                            properties:
+                              extraArgs:
+                                additionalProperties:
+                                  type: string
+                                description: Extra arguments that are added to the
+                                  scheduler services
+                                type: object
+                              extraBinds:
+                                description: Extra binds added to the controlplane
+                                  nodes
+                                items:
+                                  type: string
+                                type: array
+                              extraEnv:
+                                description: Extra env added to the controlplane nodes
+                                items:
+                                  type: string
+                                type: array
+                              image:
+                                description: Docker image of the scheduler service
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                  servicesEtcd:
+                    items:
+                      properties:
+                        backupConfig:
+                          items:
+                            properties:
+                              enabled:
+                                type: boolean
+                              intervalHours:
+                                type: number
+                              retention:
+                                type: number
+                              s3BackupConfig:
+                                items:
+                                  properties:
+                                    accessKeySecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                    bucketName:
+                                      type: string
+                                    customCa:
+                                      type: string
+                                    endpoint:
+                                      type: string
+                                    folder:
+                                      type: string
+                                    region:
+                                      type: string
+                                    secretKeySecretRef:
+                                      description: A SecretKeySelector is a reference
+                                        to a secret key in an arbitrary namespace.
+                                      properties:
+                                        key:
+                                          description: The key to select.
+                                          type: string
+                                        name:
+                                          description: Name of the secret.
+                                          type: string
+                                        namespace:
+                                          description: Namespace of the secret.
+                                          type: string
+                                      required:
+                                      - key
+                                      - name
+                                      - namespace
+                                      type: object
+                                  type: object
+                                type: array
+                              safeTimestamp:
+                                type: boolean
+                              timeout:
+                                type: number
+                            type: object
+                          type: array
+                        caCertSecretRef:
+                          description: A SecretKeySelector is a reference to a secret
+                            key in an arbitrary namespace.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        certSecretRef:
+                          description: A SecretKeySelector is a reference to a secret
+                            key in an arbitrary namespace.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        creation:
+                          type: string
+                        externalUrls:
+                          items:
+                            type: string
+                          type: array
+                        extraArgs:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        extraBinds:
+                          items:
+                            type: string
+                          type: array
+                        extraEnv:
+                          items:
+                            type: string
+                          type: array
+                        gid:
+                          type: number
+                        image:
+                          type: string
+                        keySecretRef:
+                          description: A SecretKeySelector is a reference to a secret
+                            key in an arbitrary namespace.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        path:
+                          type: string
+                        retention:
+                          type: string
+                        snapshot:
+                          type: boolean
+                        uid:
+                          type: number
+                      type: object
+                    type: array
+                  servicesKubeApi:
+                    items:
+                      properties:
+                        alwaysPullImages:
+                          description: Enable/Disable AlwaysPullImages admissions
+                            plugin
+                          type: boolean
+                        auditLog:
+                          items:
+                            properties:
+                              configuration:
+                                items:
+                                  properties:
+                                    format:
+                                      type: string
+                                    maxAge:
+                                      type: number
+                                    maxBackup:
+                                      type: number
+                                    maxSize:
+                                      type: number
+                                    path:
+                                      type: string
+                                    policy:
+                                      type: string
+                                  type: object
+                                type: array
+                              enabled:
+                                type: boolean
+                            type: object
+                          type: array
+                        eventRateLimit:
+                          items:
+                            properties:
+                              configuration:
+                                type: string
+                              enabled:
+                                type: boolean
+                            type: object
+                          type: array
+                        extraArgs:
+                          additionalProperties:
+                            type: string
+                          description: Extra arguments that are added to the kube-api
+                            services
+                          type: object
+                        extraBinds:
+                          description: Extra binds added to the controlplane nodes
+                          items:
+                            type: string
+                          type: array
+                        extraEnv:
+                          description: Extra env added to the controlplane nodes
+                          items:
+                            type: string
+                          type: array
+                        image:
+                          type: string
+                        podSecurityPolicy:
+                          description: Enabled/Disable PodSecurityPolicy
+                          type: boolean
+                        secretsEncryptionConfig:
+                          items:
+                            properties:
+                              customConfig:
+                                type: string
+                              enabled:
+                                type: boolean
+                            type: object
+                          type: array
+                        serviceClusterIpRange:
+                          description: Virtual IP range that will be used by Kubernetes
+                            services
+                          type: string
+                        serviceNodePortRange:
+                          description: Port range for services defined with NodePort
+                            type
+                          type: string
+                      type: object
+                    type: array
+                  servicesKubeController:
+                    items:
+                      properties:
+                        clusterCidr:
+                          description: CIDR Range for Pods in cluster
+                          type: string
+                        extraArgs:
+                          additionalProperties:
+                            type: string
+                          description: Extra arguments that are added to the kube-controller
+                            service
+                          type: object
+                        extraBinds:
+                          description: Extra binds added to the controlplane nodes
+                          items:
+                            type: string
+                          type: array
+                        extraEnv:
+                          description: Extra env added to the controlplane nodes
+                          items:
+                            type: string
+                          type: array
+                        image:
+                          description: Docker image of the kube-controller service
+                          type: string
+                        serviceClusterIpRange:
+                          description: Virtual IP range that will be used by Kubernetes
+                            services
+                          type: string
+                      type: object
+                    type: array
+                  servicesKubelet:
+                    items:
+                      properties:
+                        clusterDnsServer:
+                          description: Cluster DNS service ip
+                          type: string
+                        clusterDomain:
+                          description: Domain of the cluster
+                          type: string
+                        extraArgs:
+                          additionalProperties:
+                            type: string
+                          description: Extra arguments that are added to the kubelet
+                            services
+                          type: object
+                        extraBinds:
+                          description: Extra binds added to the worker nodes
+                          items:
+                            type: string
+                          type: array
+                        extraEnv:
+                          description: Extra env added to the nodes
+                          items:
+                            type: string
+                          type: array
+                        failSwapOn:
+                          description: Fail if swap is enabled
+                          type: boolean
+                        generateServingCertificate:
+                          type: boolean
+                        image:
+                          description: Docker image of the kubelet service
+                          type: string
+                        infraContainerImage:
+                          description: The image whose network/ipc namespaces containers
+                            in each pod will use
+                          type: string
+                      type: object
+                    type: array
+                  servicesKubeproxy:
+                    items:
+                      properties:
+                        extraArgs:
+                          additionalProperties:
+                            type: string
+                          description: Extra arguments that are added to the kubeproxy
+                            services
+                          type: object
+                        extraBinds:
+                          description: Extra binds added to the worker nodes
+                          items:
+                            type: string
+                          type: array
+                        extraEnv:
+                          description: Extra env added to the worker nodes
+                          items:
+                            type: string
+                          type: array
+                        image:
+                          description: Docker image of the kubeproxy service
+                          type: string
+                      type: object
+                    type: array
+                  servicesScheduler:
+                    items:
+                      properties:
+                        extraArgs:
+                          additionalProperties:
+                            type: string
+                          description: Extra arguments that are added to the scheduler
+                            services
+                          type: object
+                        extraBinds:
+                          description: Extra binds added to the controlplane nodes
+                          items:
+                            type: string
+                          type: array
+                        extraEnv:
+                          description: Extra env added to the controlplane nodes
+                          items:
+                            type: string
+                          type: array
+                        image:
+                          description: Docker image of the scheduler service
+                          type: string
+                      type: object
+                    type: array
+                  sshAgentAuth:
+                    description: SSH Agent Auth enable
+                    type: boolean
+                  sshCertPath:
+                    description: SSH Certificate Path
+                    type: string
+                  sshKeyPath:
+                    description: SSH Private Key Path
+                    type: string
+                  systemImages:
+                    description: RKE k8s cluster system images list
+                    items:
+                      properties:
+                        aciCniDeployContainer:
+                          type: string
+                        aciControllerContainer:
+                          type: string
+                        aciHostContainer:
+                          type: string
+                        aciMcastContainer:
+                          type: string
+                        aciOpflexContainer:
+                          type: string
+                        aciOvsContainer:
+                          type: string
+                        alpine:
+                          type: string
+                        calicoCni:
+                          type: string
+                        calicoControllers:
+                          type: string
+                        calicoCtl:
+                          type: string
+                        calicoFlexVol:
+                          type: string
+                        calicoNode:
+                          type: string
+                        canalCni:
+                          type: string
+                        canalFlannel:
+                          type: string
+                        canalFlexVol:
+                          type: string
+                        canalNode:
+                          type: string
+                        certDownloader:
+                          type: string
+                        coredns:
+                          type: string
+                        corednsAutoscaler:
+                          type: string
+                        dnsmasq:
+                          type: string
+                        etcd:
+                          type: string
+                        flannel:
+                          type: string
+                        flannelCni:
+                          type: string
+                        ingress:
+                          type: string
+                        ingressBackend:
+                          type: string
+                        kubeDns:
+                          type: string
+                        kubeDnsAutoscaler:
+                          type: string
+                        kubeDnsSidecar:
+                          type: string
+                        kubernetes:
+                          type: string
+                        kubernetesServicesSidecar:
+                          type: string
+                        metricsServer:
+                          type: string
+                        nginxProxy:
+                          type: string
+                        nodelocal:
+                          type: string
+                        podInfraContainer:
+                          type: string
+                        weaveCni:
+                          type: string
+                        weaveNode:
+                          type: string
+                        windowsPodInfraContainer:
+                          type: string
+                      type: object
+                    type: array
+                  updateOnly:
+                    description: Skip idempotent deployment of control and etcd plane
+                    type: boolean
+                  upgradeStrategy:
+                    description: RKE k8s cluster upgrade strategy
+                    items:
+                      properties:
+                        drain:
+                          type: boolean
+                        drainInput:
+                          items:
+                            properties:
+                              deleteLocalData:
+                                type: boolean
+                              force:
+                                type: boolean
+                              gracePeriod:
+                                type: number
+                              ignoreDaemonSets:
+                                type: boolean
+                              timeout:
+                                type: number
+                            type: object
+                          type: array
+                        maxUnavailableControlplane:
+                          type: string
+                        maxUnavailableWorker:
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              providerConfigRef:
+                default:
+                  name: default
+                description: ProviderConfigReference specifies how the provider that
+                  will be used to create, observe, update, and delete this managed
+                  resource should be configured.
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                required:
+                - name
+                type: object
+              providerRef:
+                description: 'ProviderReference specifies the provider that will be
+                  used to create, observe, update, and delete this managed resource.
+                  Deprecated: Please use ProviderConfigReference, i.e. `providerConfigRef`'
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                required:
+                - name
+                type: object
+              publishConnectionDetailsTo:
+                description: PublishConnectionDetailsTo specifies the connection secret
+                  config which contains a name, metadata and a reference to secret
+                  store config to which any connection details for this managed resource
+                  should be written. Connection details frequently include the endpoint,
+                  username, and password required to connect to the managed resource.
+                properties:
+                  configRef:
+                    default:
+                      name: default
+                    description: SecretStoreConfigRef specifies which secret store
+                      config should be used for this ConnectionSecret.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  metadata:
+                    description: Metadata is the metadata for connection secret.
+                    properties:
+                      annotations:
+                        additionalProperties:
+                          type: string
+                        description: Annotations are the annotations to be added to
+                          connection secret. - For Kubernetes secrets, this will be
+                          used as "metadata.annotations". - It is up to Secret Store
+                          implementation for others store types.
+                        type: object
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: Labels are the labels/tags to be added to connection
+                          secret. - For Kubernetes secrets, this will be used as "metadata.labels".
+                          - It is up to Secret Store implementation for others store
+                          types.
+                        type: object
+                      type:
+                        description: Type is the SecretType for the connection secret.
+                          - Only valid for Kubernetes Secret Stores.
+                        type: string
+                    type: object
+                  name:
+                    description: Name is the name of the connection secret.
+                    type: string
+                required:
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: WriteConnectionSecretToReference specifies the namespace
+                  and name of a Secret to which any connection details for this managed
+                  resource should be written. Connection details frequently include
+                  the endpoint, username, and password required to connect to the
+                  managed resource. This field is planned to be replaced in a future
+                  release in favor of PublishConnectionDetailsTo. Currently, both
+                  could be set independently and connection details would be published
+                  to both without affecting each other.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                  namespace:
+                    description: Namespace of the secret.
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - forProvider
+            type: object
+          status:
+            description: ClusterStatus defines the observed state of Cluster.
+            properties:
+              atProvider:
+                properties:
+                  apiServerUrl:
+                    type: string
+                  clusterCidr:
+                    type: string
+                  clusterDnsServer:
+                    type: string
+                  clusterDomain:
+                    type: string
+                  controlPlaneHosts:
+                    items:
+                      properties:
+                        address:
+                          type: string
+                        nodeName:
+                          type: string
+                      type: object
+                    type: array
+                  etcdHosts:
+                    items:
+                      properties:
+                        address:
+                          type: string
+                        nodeName:
+                          type: string
+                      type: object
+                    type: array
+                  id:
+                    type: string
+                  inactiveHosts:
+                    items:
+                      properties:
+                        address:
+                          type: string
+                        nodeName:
+                          type: string
+                      type: object
+                    type: array
+                  kubeAdminUser:
+                    type: string
+                  runningSystemImages:
+                    items:
+                      properties:
+                        aciCniDeployContainer:
+                          type: string
+                        aciControllerContainer:
+                          type: string
+                        aciHostContainer:
+                          type: string
+                        aciMcastContainer:
+                          type: string
+                        aciOpflexContainer:
+                          type: string
+                        aciOvsContainer:
+                          type: string
+                        alpine:
+                          type: string
+                        calicoCni:
+                          type: string
+                        calicoControllers:
+                          type: string
+                        calicoCtl:
+                          type: string
+                        calicoFlexVol:
+                          type: string
+                        calicoNode:
+                          type: string
+                        canalCni:
+                          type: string
+                        canalFlannel:
+                          type: string
+                        canalFlexVol:
+                          type: string
+                        canalNode:
+                          type: string
+                        certDownloader:
+                          type: string
+                        coredns:
+                          type: string
+                        corednsAutoscaler:
+                          type: string
+                        dnsmasq:
+                          type: string
+                        etcd:
+                          type: string
+                        flannel:
+                          type: string
+                        flannelCni:
+                          type: string
+                        ingress:
+                          type: string
+                        ingressBackend:
+                          type: string
+                        kubeDns:
+                          type: string
+                        kubeDnsAutoscaler:
+                          type: string
+                        kubeDnsSidecar:
+                          type: string
+                        kubernetes:
+                          type: string
+                        kubernetesServicesSidecar:
+                          type: string
+                        metricsServer:
+                          type: string
+                        nginxProxy:
+                          type: string
+                        nodelocal:
+                          type: string
+                        podInfraContainer:
+                          type: string
+                        weaveCni:
+                          type: string
+                        weaveNode:
+                          type: string
+                        windowsPodInfraContainer:
+                          type: string
+                      type: object
+                    type: array
+                  workerHosts:
+                    items:
+                      properties:
+                        address:
+                          type: string
+                        nodeName:
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: LastTransitionTime is the last time this condition
+                        transitioned from one status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A Message containing details about this condition's
+                        last transition from one status to another, if any.
+                      type: string
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: Type of this condition. At most one of each condition
+                        type may apply to a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

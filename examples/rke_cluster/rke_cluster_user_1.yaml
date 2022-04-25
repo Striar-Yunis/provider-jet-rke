@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rke-cluster-user-1
+  namespace: crossplane-system
+data:
+  crossplane-user: ZmFrZXVzZXI=

@@ -1,11 +1,11 @@
-apiVersion: template.jet.crossplane.io/v1alpha1
+apiVersion: rke.jet.crossplane.io/v1alpha1
 kind: ProviderConfig
 metadata:
-  name: default
+  name: provider-jet-rke
 spec:
   credentials:
     source: Secret
     secretRef:
-      name: example-creds
+      name: provider-jet-rke
       namespace: crossplane-system
       key: credentials

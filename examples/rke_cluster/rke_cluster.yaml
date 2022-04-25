@@ -1,0 +1,32 @@
+apiVersion: rke.rke.jet.crossplane.io/v1alpha1
+kind: Cluster
+metadata:
+  name: crossplane-cluster
+spec:
+  forProvider:
+    nodes:
+      - address: "20.0.3.12"
+        role:
+          - controlplane
+          - etcd
+        # sshKeySecretRef:
+        #   key: ssh-key
+        #   name: crossplane-key
+        #   namespace: crossplane-system
+        userSecretRef:
+          key: crossplane-user
+          name: rke-cluster-user-1
+          namespace: crossplane-system
+      - address: "20.0.3.174"
+        role:
+          - worker
+        # sshKeySecretRef:
+        #   key: ssh-key
+        #   name: crossplane-key
+        #   namespace: crossplane-system
+        userSecretRef:
+          key: crossplane-user
+          name: rke-cluster-user-1
+          namespace: crossplane-system
+  providerConfigRef:
+    name: provider-jet-rke
