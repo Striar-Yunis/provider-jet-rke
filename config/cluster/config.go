@@ -4,7 +4,7 @@ import (
 	"github.com/crossplane/terrajet/pkg/config"
 )
 
-// Maps the name of the rke_cluster to the cluster_name terraform field
+// Configure maps the name of the rke_cluster to the cluster_name terraform field
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("rke_cluster", func(r *config.Resource) {
 		r.ExternalName = config.NameAsIdentifier
