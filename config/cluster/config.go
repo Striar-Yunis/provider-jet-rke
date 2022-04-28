@@ -14,5 +14,6 @@ func Configure(p *config.Provider) {
 		r.ExternalName.OmittedFields = []string{
 			"cluster_name",
 		}
+		// r.Sensitive.AdditionalConnectionDetailsFn
 	})
 }
