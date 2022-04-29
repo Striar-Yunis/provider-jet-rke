@@ -1602,6 +1602,13 @@ func (in *ClusterObservation) DeepCopyInto(out *ClusterObservation) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.Certificates != nil {
+		in, out := &in.Certificates, &out.Certificates
+		*out = make([]CertificatesObservation, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	if in.ClusterCidr != nil {
 		in, out := &in.ClusterCidr, &out.ClusterCidr
 		*out = new(string)

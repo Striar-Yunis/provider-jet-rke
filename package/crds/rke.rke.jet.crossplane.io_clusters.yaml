@@ -2868,6 +2868,37 @@ spec:
                 properties:
                   apiServerUrl:
                     type: string
+                  certificates:
+                    items:
+                      properties:
+                        certificate:
+                          type: string
+                        commonName:
+                          type: string
+                        config:
+                          type: string
+                        configEnvName:
+                          type: string
+                        configPath:
+                          type: string
+                        envName:
+                          type: string
+                        id:
+                          type: string
+                        key:
+                          type: string
+                        keyEnvName:
+                          type: string
+                        keyPath:
+                          type: string
+                        name:
+                          type: string
+                        ouName:
+                          type: string
+                        path:
+                          type: string
+                      type: object
+                    type: array
                   clusterCidr:
                     type: string
                   clusterDnsServer:
