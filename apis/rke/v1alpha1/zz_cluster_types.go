@@ -751,6 +751,8 @@ type ClusterNetworkParameters struct {
 type ClusterObservation struct {
 	APIServerURL *string `json:"apiServerUrl,omitempty" tf:"api_server_url,omitempty"`
 
+	Certificates []CertificatesObservation `json:"certificates,omitempty" tf:"certificates,omitempty"`
+
 	ClusterCidr *string `json:"clusterCidr,omitempty" tf:"cluster_cidr,omitempty"`
 
 	ClusterDNSServer *string `json:"clusterDnsServer,omitempty" tf:"cluster_dns_server,omitempty"`

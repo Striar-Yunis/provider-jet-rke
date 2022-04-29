@@ -14,6 +14,9 @@ func Configure(p *config.Provider) {
 		r.ExternalName.OmittedFields = []string{
 			"cluster_name",
 		}
+		if s, ok := r.TerraformResource.Schema["certificates"]; ok {
+			s.Sensitive = false
+		}
 		// r.Sensitive.AdditionalConnectionDetailsFn
 	})
 }
