@@ -1,6 +1,9 @@
 package cluster
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/crossplane/terrajet/pkg/config"
 )
 
@@ -13,10 +16,22 @@ func Configure(p *config.Provider) {
 		}
 		r.ExternalName.OmittedFields = []string{
 			"cluster_name",
+			"certificates",
 		}
-		if s, ok := r.TerraformResource.Schema["certificates"]; ok {
-			s.Sensitive = false
+		r.Sensitive.AdditionalConnectionDetailsFn = func(attr map[string]interface{}) (map[string][]byte, error) {
+			conn := map[string][]byte{}
+			certs := attr["certificates"]
+			for _, cert := range certs.([]interface{}) {
+				testcert := cert.(map[string]interface{})
+				certname := "certificates" + "." + testcert["name"].(string)
+				if a, err := json.Marshal((testcert)); err != nil {
+					fmt.Println("Error converting certificate to JSON", err)
+				} else {
+					conn[certname] = a
+				}
+
+			}
+			return conn, nil
 		}
-		// r.Sensitive.AdditionalConnectionDetailsFn
 	})
 }
