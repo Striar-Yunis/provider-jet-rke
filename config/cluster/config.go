@@ -18,6 +18,7 @@ func Configure(p *config.Provider) {
 			"cluster_name",
 			"certificates",
 		}
+		r.UseAsync = true
 		r.Sensitive.AdditionalConnectionDetailsFn = func(attr map[string]interface{}) (map[string][]byte, error) {
 			conn := map[string][]byte{}
 			certs := attr["certificates"]
