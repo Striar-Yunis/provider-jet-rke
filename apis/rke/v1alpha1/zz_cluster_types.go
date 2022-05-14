@@ -635,37 +635,6 @@ type CanalNetworkProviderParameters struct {
 	Iface *string `json:"iface,omitempty" tf:"iface,omitempty"`
 }
 
-type CertificatesObservation struct {
-	Certificate *string `json:"certificate,omitempty" tf:"certificate,omitempty"`
-
-	CommonName *string `json:"commonName,omitempty" tf:"common_name,omitempty"`
-
-	Config *string `json:"config,omitempty" tf:"config,omitempty"`
-
-	ConfigEnvName *string `json:"configEnvName,omitempty" tf:"config_env_name,omitempty"`
-
-	ConfigPath *string `json:"configPath,omitempty" tf:"config_path,omitempty"`
-
-	EnvName *string `json:"envName,omitempty" tf:"env_name,omitempty"`
-
-	ID *string `json:"id,omitempty" tf:"id,omitempty"`
-
-	Key *string `json:"key,omitempty" tf:"key,omitempty"`
-
-	KeyEnvName *string `json:"keyEnvName,omitempty" tf:"key_env_name,omitempty"`
-
-	KeyPath *string `json:"keyPath,omitempty" tf:"key_path,omitempty"`
-
-	Name *string `json:"name,omitempty" tf:"name,omitempty"`
-
-	OuName *string `json:"ouName,omitempty" tf:"ou_name,omitempty"`
-
-	Path *string `json:"path,omitempty" tf:"path,omitempty"`
-}
-
-type CertificatesParameters struct {
-}
-
 type CloudProviderObservation struct {
 }
 
